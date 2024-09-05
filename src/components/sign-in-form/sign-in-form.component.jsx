@@ -31,10 +31,8 @@ const SignInForm = () => {
     } catch (error) {
       if (error.code === 'auth/popup-closed-by-user') {
         alert('Popup closed by user before completing sign in.');
-        // Handle the specific case where the popup was closed
       } else {
         alert('Error signing in with Google:', error);
-        // Handle other errors
       }
     }
   };
@@ -63,7 +61,6 @@ const SignInForm = () => {
           break;
         default:
           alert(error);
-          console.log(error);
       }
     }
   };
