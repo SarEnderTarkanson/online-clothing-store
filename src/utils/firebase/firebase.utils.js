@@ -1,4 +1,4 @@
-import { initializeApp } from "firebase/app";
+import { initializeApp } from 'firebase/app';
 import {
   getAuth,
   signInWithRedirect,
@@ -8,16 +8,23 @@ import {
   signInWithEmailAndPassword,
   signOut,
   onAuthStateChanged,
-} from "firebase/auth";
-import { getFirestore, doc, getDoc, setDoc } from "firebase/firestore";
+} from 'firebase/auth';
+import {
+  getFirestore,
+  doc,
+  getDoc,
+  setDoc,
+  collection,
+  writeBatch,
+} from 'firebase/firestore';
 
 const firebaseConfig = {
-  apiKey: "AIzaSyAwZHnvOlOQttqvyIoePmihWm8Fa109c2o",
-  authDomain: "online-clothing-store-f2dfb.firebaseapp.com",
-  projectId: "online-clothing-store-f2dfb",
-  storageBucket: "online-clothing-store-f2dfb.appspot.com",
-  messagingSenderId: "112127502216",
-  appId: "1:112127502216:web:6d45d773a4218727307c3d",
+  apiKey: 'AIzaSyAwZHnvOlOQttqvyIoePmihWm8Fa109c2o',
+  authDomain: 'online-clothing-store-f2dfb.firebaseapp.com',
+  projectId: 'online-clothing-store-f2dfb',
+  storageBucket: 'online-clothing-store-f2dfb.appspot.com',
+  messagingSenderId: '112127502216',
+  appId: '1:112127502216:web:6d45d773a4218727307c3d',
 };
 
 const firebaseApp = initializeApp(firebaseConfig);
@@ -25,7 +32,7 @@ const firebaseApp = initializeApp(firebaseConfig);
 const googleProvider = new GoogleAuthProvider();
 
 googleProvider.setCustomParameters({
-  prompt: "select_account",
+  prompt: 'select_account',
 });
 
 export const auth = getAuth();
@@ -36,12 +43,27 @@ export const signInWithGoogleRedirect = () =>
 
 export const db = getFirestore();
 
+export const addCollectionAndDocuments = async (
+  collectionKey,
+  objectsToAdd,
+) => {
+  const collectionRef = collection(db, collectionKey);
+  const batch = writeBatch(db);
+  objectsToAdd.forEach(object => {
+    const docRef = doc(collectionRef, object.title.toLowerCase());
+    batch.set(docRef, object)
+  });
+
+  await batch.commit();
+  console.log("done")
+};
+
 export const createUserDocumentFromAuth = async (
   userAuth,
-  additionalInformation = {}
+  additionalInformation = {},
 ) => {
   if (!userAuth) return;
-  const userDocRef = doc(db, "users", userAuth.uid);
+  const userDocRef = doc(db, 'users', userAuth.uid);
 
   const userSnapshot = await getDoc(userDocRef);
 
@@ -57,7 +79,7 @@ export const createUserDocumentFromAuth = async (
         ...additionalInformation,
       });
     } catch (error) {
-      console.log("error creating the user", error.message);
+      console.log('error creating the user', error.message);
     }
   }
   return userDocRef;
